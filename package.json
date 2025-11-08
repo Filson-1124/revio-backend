@@ -1,0 +1,37 @@
+{
+  "name": "reviewer-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "postinstall": "pip3 install -r requirements.txt || true"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "fast-xml-parser": "^5.3.0",
+    "firebase-admin": "^13.4.0",
+    "jszip": "^3.10.1",
+    "multer": "^2.0.1",
+    "node-cache": "^5.1.2",
+    "openai": "^5.10.2",
+    "p-limit": "^7.1.1",
+    "tesseract.js": "^6.0.1",
+    "unzipper": "^0.12.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
