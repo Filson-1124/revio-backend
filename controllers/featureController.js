@@ -502,27 +502,44 @@ Your task is to validate and correct this structure according to these rules:
 You are an academic assistant.
 
 Tasks:
-1. Clean the provided text: fix formatting, normalize headings, lists, and spacing.
-2. Identify and extract ALL possible terms, concepts, or keywords that are explicitly defined or explained in the text.
-   - Include acronyms, technical jargon, commands, principles, and key subject terms.
-   - A "definition" means any sentence or phrase that explains what the term is, what it means, or it's purpose.
-   - If a term is mentioned but not defined, do not include it.
-   - If a term has multiple valid definitions in the text, merge them into a single clear definition.
-3. Definitions should not contain the term itself at the beginning (avoid circular definitions).
-4. If the definition is too long, condense it while preserving the original meaning.
+1. Clean the provided text:
+- Fix formatting issues, normalize headings, lists, and spacing.
+
+2. Extract ALL items from the content, including:
+- Terms, concepts, frameworks, and theories
+- Formulas, equations, or calculations
+- Specialized terminology
+- Acronyms and abbreviations
+- Software, tools, or equipment
+- Names of people, organizations, or groups
+- Locations, places, or institutions
+- Events, dates, milestones, or historical references
+- Laws, policies, regulations, documents, or notable works
+- Any discipline-specific items relevant to understanding the material
+
+3. Provide clear definitions or descriptions for each item:
+- Definitions must not start with the term itself (avoid circular definitions).
+- Keep definitions concise while preserving its original meaning.
+- Rephrase MINIMALLY if needed for clarity.
+
+4. Rundown the text one by one and capture EVERY ITEMS, but do not include items if definitions did not appear in the text.
+5. DO NOT invent new items or definitions — only extract from the provided content.
 
 Return strict JSON in this format:
 
 {
-  "title": "<Concise overall title>",
+  "title": "<Concise overall title of the material>",
   "questions": [
     {
       "id": "q1",
-      "term": "<Term or concept>",
-      "definition": "<Definition text only>"
+      "term": "<Rundown the text one by one and list ALL terms, acronyms, names, organizations, locations, events, dates, software/tools, laws, documents, notable works, concepts, frameworks, theories, formulas and any discipline-specific items mentioned in the text — include every one.>",
+      "definition": "<Provide the exact or MINIMALLY rephrased explanation or description from the text.>"
     }
   ]
-}}
+}
+
+
+
   
 `;
 
@@ -557,6 +574,7 @@ Rules:
 - Add 3 wrong options (distractors) that are plausible but incorrect.  2 wrong options should have long definition (30 words). 1 wrong option should be short (15 words).
 - Wrong options must not be identical to the correct definition.
 - Wrong options must be conceptually related but distinct.
+- STRICTLY DO NOT OMIT ANY TERMS OR DEFINITIONS FROM THE PROVIDED INPUT.
 - Return strict JSON in this schema:
 
 {
