@@ -75,9 +75,10 @@ You are an academic assistant helping students prepare for exams.
 Task:
 - Read the provided study material.
 - Lightly summarize it into a structured study guide using the exact format below.
-- “Lightly summarize” remove redundancy while preserving every concept, definition, and example from the original text.
+- “Lightly summarize” means preserving every concept, definition, and example from the original text, but fixing the flow of the content.
 - Do not add new explanations.
 - Group and include all related concepts into sections with appropriate section titles.
+- You must include all points from the original text.
 
 Output format (strict JSON only):
 
@@ -85,29 +86,24 @@ Output format (strict JSON only):
   "title": "<Concise overall title of the content in sentence case.>",
   "sections": [
     {
-      "title": "<Section title in all capital letters>",
-      "summary": "<Lightly summarize into a structured way that retains all original concepts, definitions, and examples exactly as presented in the source text>",
+      "title": "<SECTION TITLE IN ALL CAPITAL LETTERS>",
+      "summary": "<Write a lightly summarized version of the section here. Include all text that does not fit into the *concepts* fields — do not omit any content. This is not a section summary, but a cohesive version of leftover information to maintain flow.>",
       "concepts": [
         {
-          "term": "<Key terms or phrases from the content>",
-          "explanation": "<Exact or minimally rephrased explanation from the text>",
-          "example": "<Give examples if explicitly provided in the text; include all given examples>"
-        },
-        {
-        ...
+          "term": "<List ALL names, dates, events, terms, and phrases from the content — include every one.>",
+          "explanation": "<Provide the exact or minimally rephrased explanation from the text.>",
+          "example": "<Include examples only if explicitly provided in the text — list all given examples.>"
         }
       ],
       "keyTakeaways": [
-        "<Important fact or point preserved verbatim or near-verbatim>",
-        "<Another important fact>",
-        "..."
+        "<Important fact or point preserved verbatim or near-verbatim from the section.>",
+        "<Another important fact.>",
+        "<Add more if applicable.>"
       ]
-    },
-    {
-    ...
     }
   ]
 }
+
              
         `;
         break;
