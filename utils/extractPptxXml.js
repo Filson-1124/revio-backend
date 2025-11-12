@@ -308,7 +308,7 @@ function slideToMarkdown(slide) {
   const lines = [];
   if (slide.title) lines.push(`# ${slide.title}`);
   if (slide.text.length) slide.text.forEach((t) => lines.push(`- ${t}`));
-  if (slide.smartArt.length) slide.smartArt.forEach((s) => lines.push(`- SmartArt: ${s}`));
+  if (slide.smartArt.length) slide.smartArt.forEach((s) => lines.push(`${s}`));
   if (slide.tables.length) {
     slide.tables.forEach((tbl, idx) => {
       const tblLines = tbl.rows.map((r) => r.join(" | ")).join("\n");
