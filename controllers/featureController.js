@@ -177,9 +177,7 @@ The JSON must strictly follow this format:
         "<Main takeaway 1>",
         "<Main takeaway 2>",
         "<Main takeaway 3>",
-        "<Main takeaway 4>",
-        "<Main takeaway 5>",
-        "<Main takeaway 6 if applicable>"
+        "<Main takeaway 4 if applicable>"
       ]
     }
   ]
