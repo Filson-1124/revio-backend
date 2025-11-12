@@ -76,7 +76,8 @@ Task:
 - Read the provided study material.
 - Lightly summarize it into a structured study guide using the exact format below.
 - “Lightly summarize” remove redundancy while preserving every concept, definition, and example from the original text.
-- Do not add new explanations or interpretations.
+- Do not add new explanations.
+- Group and include all related concepts into sections with appropriate section titles.
 
 Output format (strict JSON only):
 
@@ -101,6 +102,9 @@ Output format (strict JSON only):
         "<Another important fact>",
         "..."
       ]
+    },
+    {
+    ...
     }
   ]
 }
