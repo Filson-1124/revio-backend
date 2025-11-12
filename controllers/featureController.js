@@ -85,12 +85,15 @@ Output format (strict JSON only):
   "sections": [
     {
       "title": "<Section title in all capital letters>",
-      "summary": "<Lightly condensed restatement of this section that shortens wording but retains all original concepts, definitions, and examples exactly as presented in the source text>",
+      "summary": "<Lightly summarize into a structured way that retains all original concepts, definitions, and examples exactly as presented in the source text>",
       "concepts": [
         {
-          "term": "<Key term or phrase from the content>",
+          "term": "<Key terms or phrases from the content>",
           "explanation": "<Exact or minimally rephrased explanation from the text>",
           "example": "<Give examples if explicitly provided in the text; include all given examples>"
+        },
+        {
+        ...
         }
       ],
       "keyTakeaways": [
