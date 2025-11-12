@@ -75,7 +75,7 @@ You are an academic assistant helping students prepare for exams.
 Task:
 - Read the provided study material.
 - Lightly summarize it into a structured study guide using the exact format below.
-- “Lightly summarize” means shorten sentences and remove redundancy while preserving every concept, definition, and example from the original text.
+- “Lightly summarize” remove redundancy while preserving every concept, definition, and example from the original text.
 - Do not add new explanations or interpretations.
 
 Output format (strict JSON only):
