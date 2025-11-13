@@ -229,25 +229,50 @@ The JSON must strictly follow this format:
 if (featureType === 'acronym') {
   // Step 0: GPT-based markdown cleaning/restructuring
   const step0SystemPrompt = `
-You are an academic assistant helping students prepare for exams.
+Extract only existing terms from the given text (no explanations, examples, or invented terms).
+Group all extracted terms into many small, concept-based sections with 5–10 related terms per section.
 
-Task:
-- Read the provided study material.
-- Lightly summarize it into a structured study guide using the exact format below.
-- “Lightly summarize” means shorten sentences and remove redundancy while preserving every concept, definition, and example from the original text.
-- Do not add new explanations or interpretations.
-- Do not include metadata, objectives and the likes.
-- Separate the terms into distinct sections whenever they represent different or clearly separable concepts.
+Rules:
+1. Use only words and phrases actually present in the text.
+2. Group terms by logical meaning — e.g., Programming Basics, Errors, OOP Concepts, Java Components, etc.
+ - if programming languages appear, DO NOT group them into "Programming Languages", but rather, group them into separate High-Level and Low-Level languages just like the example below.
+3. Treat all sections equally (no subsections).
+4. Do not include notes or commentary.
+5. Merge duplicates (e.g., “Logic error” + “Logical error” → “Logic Error”).
+6. Create more specific sections.
+7. Keep each section small (max 10 terms).
+8. Output format only:
 
-Output format:
-Title: <Concise overall title of the content.>
-sections: <Section title 1 based on the overall terms>
-terms: <Key term or compound terms from the content>
+# Section Name
+- Term 1
+- Term 2
+- Term 3
 
-sections: <Section title 2 based on the overall terms>
-terms: <Key term or compound terms from the content>
-...
-and so on and so forth.
+Example Output:
+ # High-Level Programming Language
+ - Java
+ - C#
+ - JavaScript
+ - C++
+ - PHP
+ - Ruby
+
+ # Low-Level Programming Language
+ - Assembly Language
+ - Machine Language
+ - C
+ - C++
+ - Rust
+ - Ada
+ - FORTRAN
+ - COBOL
+
+9. Output only the grouped list of terms — nothing else.
+
+
+
+
+
 
 `;
 
@@ -303,8 +328,8 @@ Return strict JSON only in this format:
   "acronymGroups": [
     {
       "id": "q1",
-      "keyPhrase": "<Mnemonic sentence>",
-      "title": "<Group title>",
+      "keyPhrase": "<Mnemonic sentence where each word starts with the corresponding letter of each term in order. Compound words count only the first word.>",
+      "title": "<Group title that reflects the terms, but do not use the terms themselves>",
       "contents": [
         { "letter": "<First letter>", "word": "<Term 1>" },
         { "letter": "<First letter>", "word": "<Term 2>" }
