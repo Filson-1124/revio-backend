@@ -529,6 +529,7 @@ You are an academic assistant.
 Tasks:
 1. Clean the provided text:
 - Fix formatting issues, normalize headings, lists, and spacing.
+- Do not include metadata of the text.
 
 2. Extract ALL items from the content, including:
 - Terms, concepts, frameworks, and theories
