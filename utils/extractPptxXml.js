@@ -58,7 +58,7 @@ export async function extractPptxXml(filePath) {
               const diagramContent = await zip.files[diagramPath].async("text");
               const diagramXml = parser.parse(diagramContent);
               const diagramText = collectTextFromDiagram(diagramXml);
-              if (diagramText.length) smartArt.push(diagramText.join(" → "));
+              if (diagramText.length) smartArt.push(diagramText.join("<!--appended text -->"));//remove arrow
             }
           }
         }
@@ -158,7 +158,7 @@ export function extractSmartArt(xmlNode) {
       const gData = node.graphicFrame.graphic.graphicData;
       if (gData) {
         const smartText = collectTextFromNodeDedup(gData);
-        if (smartText.length) results.push(smartText.join(" → "));
+        if (smartText.length) results.push(smartText.join("<!--appended text -->"));//removed arrow
       }
     }
   });
@@ -318,7 +318,7 @@ function slideToMarkdown(slide) {
   if (slide.charts.length) {
     slide.charts.forEach((c) => {
       const seriesText = c.series.map((s) => `${s.name} = ${s.value}`).join(", ");
-      lines.push(`- Chart: ${c.title} → ${seriesText}`);
+      lines.push(`- Chart: ${c.title} ${seriesText}`);//removed arrow
     });
   }
   if (slide.notes) lines.push(`- Notes: ${slide.notes}`); // notes here
@@ -358,7 +358,7 @@ export function flattenSlideText(slides) {
     if (slide.charts.length) {
       slide.charts.forEach((c) => {
         const seriesText = c.series.map((s) => `${s.name} = ${s.value}`).join(", ");
-        lines.push(`${c.title} → ${seriesText}`);
+        lines.push(`${c.title} ${seriesText}`);//removed arrow
       });
     }
 

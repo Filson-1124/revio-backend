@@ -8,7 +8,7 @@ export async function generateWithGPT({
   userPrompt,
   systemPrompt,
   temperature = 0,
-  model = 'gpt-4o-mini',
+  model = 'gpt-4.1-mini',
   max_tokens
 }) {
 const MAX_CONTEXT_TOKENS = 128_000;

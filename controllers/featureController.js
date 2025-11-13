@@ -229,50 +229,26 @@ The JSON must strictly follow this format:
 if (featureType === 'acronym') {
   // Step 0: GPT-based markdown cleaning/restructuring
   const step0SystemPrompt = `
-Extract only existing terms from the given text (no explanations, examples, or invented terms).
-Group all extracted terms into many small, concept-based sections with 5–10 related terms per section.
+Extract only existing terms from the given text (no explanations, examples, or invented terms or words).
+Group all extracted terms into multiple small, concept-based sections with 2–5 related terms per section.
 
 Rules:
 1. Use only words and phrases actually present in the text.
-2. Group terms by logical meaning — e.g., Programming Basics, Errors, OOP Concepts, Java Components, etc.
- - if programming languages appear, DO NOT group them into "Programming Languages", but rather, group them into separate High-Level and Low-Level languages just like the example below.
-3. Treat all sections equally (no subsections).
-4. Do not include notes or commentary.
+2. Group logically by meaning — e.g., Programming Basics, Errors, OOP Concepts, Java Components, etc.
+- If programming languages appear, do NOT group them under “Programming Languages.” Instead, group them into High-Level Languages and Low-Level Languages (e.g., Part 1, Part 2 if needed).
+3. Each section is independent — no subsections or nesting.
+4. Do not include notes, commentary, or explanations.
 5. Merge duplicates (e.g., “Logic error” + “Logical error” → “Logic Error”).
-6. Create more specific sections.
-7. Keep each section small (max 10 terms).
-8. Output format only:
+6. Each section must contain 2–5 terms only.
+7. If a section would exceed 5 terms, create additional sections labeled “Part 1,” “Part 2,” “Part 3,” etc. (STRICTLY FOLLOW THIS RULE NO MATTER WHAT).
 
+8. Output format must follow exactly:
 # Section Name
 - Term 1
 - Term 2
 - Term 3
 
-Example Output:
- # High-Level Programming Language
- - Java
- - C#
- - JavaScript
- - C++
- - PHP
- - Ruby
-
- # Low-Level Programming Language
- - Assembly Language
- - Machine Language
- - C
- - C++
- - Rust
- - Ada
- - FORTRAN
- - COBOL
-
-9. Output only the grouped list of terms — nothing else.
-
-
-
-
-
+9. Output only the grouped list of terms — nothing else. No introductions, notes, or summaries.
 
 `;
 
@@ -305,16 +281,20 @@ You are an academic assistant generating acronyms and mnemonic sentences from JS
 1. Letter Assignment:
 - For each term, set "letter" = first character of the first word of the term.
 - Preserve all terms exactly as they appear.
+
 2. Mnemonic Sentence (keyPhrase):
-- Must have exactly the same number of words as terms.
-- Each word must start with the corresponding "letter" of that term, in order.
-- Include repeated letters; do not skip, merge, or drop any.
-- The words can relate to the meaning of the terms, but must not use the terms themselves.
-- If you cannot make a meaningful mnemonic for a letter, use a generic placeholder word starting with that letter (e.g., “Lovely” for “L”), but do not skip or omit any letter.
+- Must contain exactly the same number of words as the letters in the given term(s), in the correct order.
+- Each word must begin with the corresponding letter of the term, following the exact sequence.
+- STRICTLY follow the letters sequentially.
+- Must not exceed 5 words in total.
+- Include all repeated letters — do not skip, merge, or omit any.
+- The words must not relate to the term’s meaning and must not include the term itself or any of its variations.
+- If a meaningful word cannot be formed for a letter, use a neutral placeholder word that starts with that letter (e.g., “Lovely” for L, “Quick” for Q, “Bright” for B).
+
 3. Output Structure:
 - Keep all other fields exactly as in the input.
 - Output must be valid JSON with this schema:
- Do not invent new terms or change existing ones — only organize and create mnemonics.
+- Do not invent new terms or change existing ones — only organize and create mnemonics.
 
  Critical Rule:
 - Do not skip, merge, or alter the order of letters.
@@ -328,7 +308,7 @@ Return strict JSON only in this format:
   "acronymGroups": [
     {
       "id": "q1",
-      "keyPhrase": "<Mnemonic sentence where each word starts with the corresponding letter of each term in order. Compound words count only the first word.>",
+      "keyPhrase": "<Mnemonic sentence>",
       "title": "<Group title that reflects the terms, but do not use the terms themselves>",
       "contents": [
         { "letter": "<First letter>", "word": "<Term 1>" },
@@ -360,46 +340,57 @@ Return strict JSON only in this format:
     console.error(`[acronym Step1] Raw Output:\n`, step1Output);
     return res.status(500).json({ error: `Invalid GPT Step1 output for acronym` });
   }
-
+  parsed = step1Parsed;
   // Step 2: Generate acronyms & mnemonics
-  const step2SystemPrompt = `
+//   const step2SystemPrompt = `
 
 
-Your task is to validate and correct this structure according to these rules:
-1. Each contents item must have its "letter" equal to the first letter (case-insensitive) of its "word".
-- If mismatched, correct the "letter" field to match the first letter of "word".
-2. The "keyPhrase" must be a mnemonic sentence whose initial letters (ignoring case and punctuation) match the sequence of "letter" values in "contents".
-- Make sure "keyPhrase" is complete and is not missing word in the "contents".
-- If it doesn’t match, rewrite "keyPhrase" so that it correctly reflects each word in "contents".
-3. Preserve all other text fields (title, id, group title, etc.) as is.
-4. Return only the corrected JSON, keeping the same structure.
+// Your task is to validate and correct the JSON strictly according to these rules:
+
+// 1. Validate letter fields in contents:
+// - For each item in contents, check that "letter" matches the first letter (case-insensitive) of "word".
+// - If it does not match, update "letter" to exactly match the first letter of "word".
+
+// 2. Validate and correct keyPhrase:
+// - Count the items in contents. "keyPhrase" must have exactly the same number of words.
+// - Each word in "keyPhrase" must start with the corresponding "letter" of each contents item in order, but not the terms themselves.
+// - Keep repeated letters; do not skip, merge, or omit any letters.
+// - Do not use the terms themselves in "keyPhrase". Words may relate to the meaning of the terms or use generic placeholders.
+// - If the current "keyPhrase" does not follow these rules, rewrite it so it matches the corrected sequence of letters.
+
+// 3. Preserve all other fields exactly:
+// - Do not modify title, id, group title, or the order of acronymGroups.
+// - Do not remove, merge, or skip any terms or groups.
+
+// 4. Output:
+// - Return only the corrected JSON, maintaining the exact same structure.
+// - The output must be valid JSON.
 
 
+// `;
 
-`;
+//   const step2UserPrompt = `Here is the extracted data:\n---\n${JSON.stringify(step1Parsed, null, 2)}\n---`;
 
-  const step2UserPrompt = `Here is the extracted data:\n---\n${JSON.stringify(step1Parsed, null, 2)}\n---`;
+//   const step2Output = await generateWithGPT({
+//     userPrompt: step2UserPrompt,
+//     systemPrompt: step2SystemPrompt,
+//     temperature: 0
+//   });
 
-  const step2Output = await generateWithGPT({
-    userPrompt: step2UserPrompt,
-    systemPrompt: step2SystemPrompt,
-    temperature: 0
-  });
-
-  console.log("[acronym Step2] Raw GPT Output:\n", step2Output);
+//   console.log("[acronym Step2] Raw GPT Output:\n", step2Output);
   
 
-  let step2Parsed;
-  try {
-    step2Parsed = JSON.parse(step2Output.replace(/```json\s*/i, '').replace(/```$/, '').trim());
-  } catch (err) {
-    console.error(`[acronym Step2] Failed to parse JSON:`, err);
-    console.error(`[acronym Step2] Raw Output:\n`, step2Output);
-    return res.status(500).json({ error: `Invalid GPT Step2 output for acronym` });
-  }
+//   let step2Parsed;
+//   try {
+//     step2Parsed = JSON.parse(step2Output.replace(/```json\s*/i, '').replace(/```$/, '').trim());
+//   } catch (err) {
+//     console.error(`[acronym Step2] Failed to parse JSON:`, err);
+//     console.error(`[acronym Step2] Raw Output:\n`, step2Output);
+//     return res.status(500).json({ error: `Invalid GPT Step2 output for acronym` });
+//   }
 
 // Comment this out to enable Step 3 validation (09/22)
-  parsed = step2Parsed;
+ // parsed = step2Parsed;
 // 
 
 //Uncomment below to enable Step 3 validation if you want to include step 3 again. (09/22)
@@ -601,6 +592,7 @@ Rules:
 - Wrong options must not be identical to the correct definition.
 - Wrong options must be conceptually related but distinct.
 - STRICTLY DO NOT OMIT ANY TERMS OR DEFINITIONS FROM THE PROVIDED INPUT.
+- Do not change the "title" field.
 - Return strict JSON in this schema:
 
 {
