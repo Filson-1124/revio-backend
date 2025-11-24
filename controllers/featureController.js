@@ -602,13 +602,11 @@ You are an exam-prep assistant.
 Based on the provided JSON of terms and correct definitions, create multiple-choice style data:
 
 Rules:
-1. Keep the correct definition exactly as given.
-2. Add 3 wrong options (distractors) that are plausible but incorrect. 
-- STRICTLY match the length, format and level of detail of the correct definition (You can just twist some words if the correct definition is too long).
-- Do NOT repeat the correct definition.
-3. STRICTLY DO NOT OMIT ANY TERMS OR DEFINITIONS FROM THE PROVIDED INPUT.
-4. Do not change the "title" field.
-5. Return strict JSON in this schema:
+- Keep the correct definition exactly as given.
+- Add 3 wrong options (distractors) that are plausible but incorrect (Just twist some words from the correct definition).
+- STRICTLY DO NOT OMIT ANY TERMS OR DEFINITIONS FROM THE PROVIDED INPUT.
+- Do not change the "title" field.
+- Return strict JSON in this schema:
 
 {
   "title": "<Concise overall title of the content>",
