@@ -76,7 +76,7 @@ def extract_text_from_pdf(file_path):
             "markdown": markdown
         }
         #removing logs to not to slow down the process (N24)
-        # print(json.dumps(result)) 
+        print(json.dumps(result)) 
 
     except Exception as e:
         print(json.dumps({"success": False, "error": str(e)}))

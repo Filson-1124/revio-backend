@@ -310,12 +310,25 @@ function slideToMarkdown(slide) {
   if (slide.title) lines.push(`# ${slide.title}`);
 
   // aded level for nested lists (N24)
+  // if (slide.text.length) {
+  //   slide.text.forEach((tObj) => {
+  //     const indent = "  ".repeat(tObj.level || 0);
+  //     lines.push(`${indent}- ${tObj.text}`);
+  //   });
+  // }
+
+  //modified, level 0 should be just be plain
   if (slide.text.length) {
-    slide.text.forEach((tObj) => {
-      const indent = "  ".repeat(tObj.level || 0);
+  slide.text.forEach((tObj) => {
+    if (tObj.level > 0) {
+      const indent = "  ".repeat(tObj.level);
       lines.push(`${indent}- ${tObj.text}`);
-    });
-  }
+    } else {
+      lines.push(tObj.text); // level 0 → plain text
+    }
+  });
+}
+
 
   if (slide.smartArt.length) slide.smartArt.forEach((s) => lines.push(`: ${s}`)); // being added to the markdown
   if (slide.tables.length) {

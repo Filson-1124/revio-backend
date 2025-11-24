@@ -230,7 +230,6 @@ if (featureType === 'acronym') {
   // Step 0: GPT-based markdown cleaning/restructuring
   const step0SystemPrompt = `
 Clean the provided text:
-- Fix formatting issues and spacing only.
 - Do not include metadata of the text.
 
 Extract only existing terms from the given text (no explanations, examples, or invented terms or words).
@@ -241,22 +240,16 @@ Rules:
 - Extract only key terms (words/compound words) that appear in the text. Terms may be:
  - - single words
  - - compound words
- - - acronyms
- - - abbreviations
+ - - expounded form of acronyms
+ - - expanded form of abbreviations
  - - technical terms
 - Do NOT include definitions or explanations.
+- STICTLY do not include code snippets, terms with special characters, or non-terms.
 
 2. Group logically by meaning — e.g., Programming Basics, Errors, OOP Concepts, Java Components, etc.
 - If programming languages appear, do NOT group them under “Programming Languages.” Instead, group them into High-Level Languages and Low-Level Languages (e.g., Part 1, Part 2 if needed).
 3. Each section is independent — no subsections or nesting.
-- If abbreviations or acronyms appear, treat them as new independent groups (e.g., 
-#HTTP
-- Hyper
-- Text
-- Transfer
-- Protocol
-).
-
+- If abbreviations or acronyms appear, treat them as new independent groups (e.g., HTTP -> Hyper, Text, Transfer, Protocol).
 4. Do not include notes, commentary, or explanations.
 5. Merge duplicates (e.g., “Logic error” + “Logical error” → “Logic Error”).
 6. STRICTLY each section must contain 2–5 terms only.
@@ -281,7 +274,7 @@ Rules:
   });
 
   //removing logs to not to slow down the process (N24)
-  //console.log("[acronym Step0] Raw GPT Output:\n", step0Output);
+  console.log("[acronym Step0] Raw GPT Output:\n", step0Output);
 
   let cleanedMarkdown = stripFenced(step0Output || '');
   if (!cleanedMarkdown) {
