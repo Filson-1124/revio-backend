@@ -249,7 +249,14 @@ Rules:
 2. Group logically by meaning — e.g., Programming Basics, Errors, OOP Concepts, Java Components, etc.
 - If programming languages appear, do NOT group them under “Programming Languages.” Instead, group them into High-Level Languages and Low-Level Languages (e.g., Part 1, Part 2 if needed).
 3. Each section is independent — no subsections or nesting.
-- If abbreviations or acronyms appear, treat them as new independent groups (e.g., HTTP -> Hyper, Text, Transfer, Protocol).
+- If abbreviations or acronyms appear, treat them as new independent groups (e.g., 
+#HTTP
+- Hyper
+- Text
+- Transfer
+- Protocol
+).
+
 4. Do not include notes, commentary, or explanations.
 5. Merge duplicates (e.g., “Logic error” + “Logical error” → “Logic Error”).
 6. STRICTLY each section must contain 2–5 terms only.
