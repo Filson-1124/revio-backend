@@ -229,18 +229,31 @@ The JSON must strictly follow this format:
 if (featureType === 'acronym') {
   // Step 0: GPT-based markdown cleaning/restructuring
   const step0SystemPrompt = `
+Clean the provided text:
+- Fix formatting issues and spacing only.
+- Do not include metadata of the text.
+
 Extract only existing terms from the given text (no explanations, examples, or invented terms or words).
 Group all extracted terms into multiple small, concept-based sections with 2–5 related terms per section.
 
 Rules:
-1. Use only words and phrases actually present in the text.
+1. Use only terms (words/compound words) that are actually present in the text. No phrases or sentences.
+- Extract only key terms (words/compound words) that appear in the text. Terms may be:
+ - - single words
+ - - compound words
+ - - acronyms
+ - - abbreviations
+ - - technical terms
+- Do NOT include definitions or explanations.
+
 2. Group logically by meaning — e.g., Programming Basics, Errors, OOP Concepts, Java Components, etc.
 - If programming languages appear, do NOT group them under “Programming Languages.” Instead, group them into High-Level Languages and Low-Level Languages (e.g., Part 1, Part 2 if needed).
 3. Each section is independent — no subsections or nesting.
+- If abbreviations or acronyms appear, treat them as new independent groups (e.g., HTTP -> Hyper, Text, Transfer, Protocol).
 4. Do not include notes, commentary, or explanations.
 5. Merge duplicates (e.g., “Logic error” + “Logical error” → “Logic Error”).
-6. Each section must contain 2–5 terms only.
-7. If a section would exceed 5 terms, create additional sections labeled “Part 1,” “Part 2,” “Part 3,” etc. (STRICTLY FOLLOW THIS RULE NO MATTER WHAT).
+6. STRICTLY each section must contain 2–5 terms only.
+7. If a section would exceed 5 terms, STRICTLY create additional sections labeled “Part 1,” “Part 2,” “Part 3,” etc. (STRICTLY FOLLOW THIS RULE NO MATTER WHAT).
 
 8. Output format must follow exactly:
 # Section Name
@@ -260,7 +273,8 @@ Rules:
     temperature: 0
   });
 
-  console.log("[acronym Step0] Raw GPT Output:\n", step0Output);
+  //removing logs to not to slow down the process (N24)
+  //console.log("[acronym Step0] Raw GPT Output:\n", step0Output);
 
   let cleanedMarkdown = stripFenced(step0Output || '');
   if (!cleanedMarkdown) {
@@ -329,8 +343,8 @@ Return strict JSON only in this format:
     systemPrompt: step1SystemPrompt,
     temperature: 0
   });
-
-  console.log("[acronym Step1] Raw GPT Output:\n", step1Output);
+  //removing logs to not to slow down the process (N24)
+ // console.log("[acronym Step1] Raw GPT Output:\n", step1Output);
 
   let step1Parsed;
   try {
@@ -524,14 +538,14 @@ Tasks:
 
 2. Extract ALL items from the content, including:
 - Terms, concepts, frameworks, and theories
-- Formulas, equations, or calculations
-- Specialized terminology
 - Acronyms and abbreviations
 - Software, tools, or equipment
 - Names of people, organizations, or groups
 - Locations, places, or institutions
 - Events, dates, milestones, or historical references
 - Laws, policies, regulations, documents, or notable works
+- Specialized terminology
+- Formulas, equations, or calculations
 - Any discipline-specific items relevant to understanding the material
 
 3. Provide clear definitions or descriptions for each item:
@@ -569,7 +583,8 @@ Return strict JSON in this format:
   });
 
   // GPT raw output for first step, for debugging.
-  console.log("[terms Step1] Raw GPT Output:\n", step1Output);
+    //removing logs to not to slow down the process (N24)
+ // console.log("[terms Step1] Raw GPT Output:\n", step1Output);
 
   let step1Parsed;
   try {
@@ -621,7 +636,8 @@ Rules:
   });
 
   // GPT raw output for second step, for debugging.
-  console.log("[terms Step1] Raw GPT Output:\n", step2Output);
+    //removing logs to not to slow down the process (N24)
+ // console.log("[terms Step1] Raw GPT Output:\n", step2Output);
 
   try {
     parsed = JSON.parse(step2Output.replace(/```json\s*/i, '').replace(/```$/, '').trim());
@@ -638,7 +654,8 @@ Rules:
   const gptOutput = await generateWithGPT({ userPrompt, systemPrompt, temperature });
 
   // GPT raw output for debugging. for summarize/explain.
-  console.log(`[${featureType} Raw GPT Output]:\n`, gptOutput);
+    //removing logs to not to slow down the process (N24)
+ // console.log(`[${featureType} Raw GPT Output]:\n`, gptOutput);
 
   try {
     parsed = JSON.parse(gptOutput.replace(/```json\s*/i, '').replace(/```$/, '').trim());

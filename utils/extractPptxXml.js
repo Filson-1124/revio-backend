@@ -101,7 +101,7 @@ export async function extractPptxXml(filePath) {
 
       slides.push({
         slideNumber: i + 1,
-        title: text[0] || "",
+        title: text[0]?.text || "",
         text: text.slice(1),
         smartArt,
         tables,
@@ -128,11 +128,12 @@ function extractSlideText(xmlNode) {
     if (node.txBody && node.txBody.p) {
       const ps = Array.isArray(node.txBody.p) ? node.txBody.p : [node.txBody.p];
       for (const p of ps) {
+        const level = p.pPr?.lvl || 0; //indentation level for lists (N24)
         if (p.r) {
           const rs = Array.isArray(p.r) ? p.r : [p.r];
-          rs.forEach((r) => r.t && texts.push(r.t));
+          rs.forEach((r) => r.t && texts.push({ text: r.t, level })); //adding nested list (N24)
         } else if (p.t) {
-          texts.push(p.t);
+          texts.push({ text: p.t, level }); //adding nested list (N24)
         }
       }
     }
@@ -307,7 +308,15 @@ function extractChart(xmlNode) {
 function slideToMarkdown(slide) {
   const lines = [];
   if (slide.title) lines.push(`# ${slide.title}`);
-  if (slide.text.length) slide.text.forEach((t) => lines.push(`- ${t}`));
+
+  // aded level for nested lists (N24)
+  if (slide.text.length) {
+    slide.text.forEach((tObj) => {
+      const indent = "  ".repeat(tObj.level || 0);
+      lines.push(`${indent}- ${tObj.text}`);
+    });
+  }
+
   if (slide.smartArt.length) slide.smartArt.forEach((s) => lines.push(`: ${s}`)); // being added to the markdown
   if (slide.tables.length) {
     slide.tables.forEach((tbl, idx) => {

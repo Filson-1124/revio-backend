@@ -11,9 +11,9 @@ export async function generateWithGPT({
   model = 'gpt-4.1-mini',
   max_tokens
 }) {
-const MAX_CONTEXT_TOKENS = 128_000;
-const MAX_OUTPUT_TOKENS = 16_000;
-const RESERVED_TOKENS = 8_000;
+const MAX_CONTEXT_TOKENS = 1_000_000;
+const MAX_OUTPUT_TOKENS = 30_000;
+const RESERVED_TOKENS = 16_000;
 
 // disables the GPT functionality if the environment variable is set to true on .env
  if (process.env.DISABLE_GPT === 'true') {
@@ -38,6 +38,8 @@ const RESERVED_TOKENS = 8_000;
   }
 //ends here.
 
+  systemPrompt = systemPrompt ?? "";
+  userPrompt = userPrompt ?? "";
 
 // For testing, turn this into a constant number like 100.
 // THis is the default, MAX_CONTEXT_TOKENS - MAX_OUTPUT_TOKENS - RESERVED_TOKENS

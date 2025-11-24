@@ -62,9 +62,15 @@ async function generateForSingle(term, correctDefinition, count = 3) {
 You are an assistant that creates plausible but incorrect multiple-choice definitions (distractors).
 Generate exactly ${count} wrong definitions for the given term.
 - Do NOT repeat the correct definition.
-- Keep each distractor short (recommended 6-25 words).
 - Avoid synonyms/close paraphrases of the correct definition.
+
+Rules:
+- STRICTLY match the length, format and level of detail of the correct definition (You can just twist some words if the correct definition is too long).
+- Do NOT repeat the correct definition.
+
 Return a JSON array of strings ONLY. Example: ["wrong one", "wrong two", "wrong three"]
+
+No comments, no explanations, only the JSON object.
 
 Term: ${term}
 Correct definition: ${correctDefinition}
@@ -157,8 +163,15 @@ correct: ${it.correctDefinition}
 
     const batchPrompt = `
 You are given multiple items. For each item, generate exactly ${count} wrong but plausible definitions (distractors).
+
+Rules:
+- STRICTLY match the length, format and level of detail of the correct definition (You can just twist some words if the correct definition is too long).
+- Do NOT repeat the correct definition.
+
 Return a JSON object where keys are the ids and values are arrays of strings. Example:
 {"q1": ["wrong1","wrong2","wrong3"], "q2": ["w1","w2","w3"]}
+
+No comments, no explanations, only the JSON object.
 
 Items:
 ${batchPromptParts}

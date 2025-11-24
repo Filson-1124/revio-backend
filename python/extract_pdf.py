@@ -52,8 +52,15 @@ def extract_text_from_pdf(file_path):
                 lines = text.split('\n') if text else []
                 cleaned_lines = []
 
-                for line in lines:
+                for i, line in enumerate(lines):#modified to append hastag for first line as heading (N24)
                     line = line.strip()
+
+                    if i == 0: #added (N24)
+                        line = f"# {line}"#added (N24)
+
+                    # Remove weird bullet characters like  (N24)
+                    line = line.replace("", "").strip()
+
                     if is_figure_caption(line):
                         cleaned_lines.append(f"[Caption] {line}")
                     else:
@@ -68,7 +75,8 @@ def extract_text_from_pdf(file_path):
             "success": True,
             "markdown": markdown
         }
-        print(json.dumps(result))
+        #removing logs to not to slow down the process (N24)
+        # print(json.dumps(result)) 
 
     except Exception as e:
         print(json.dumps({"success": False, "error": str(e)}))
