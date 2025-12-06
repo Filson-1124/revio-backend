@@ -1,5 +1,5 @@
 export function postprocessMarkdown(markdown, sourceType) {
-   console.log(`[postprocessMarkdown] Received (${sourceType}):`, markdown.slice(0, 5000));
+   console.log(`[postprocessMarkdown] Received (${sourceType}):`, markdown.slice(0, 2000));
   return markdown;
   
 }
