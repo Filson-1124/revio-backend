@@ -563,7 +563,7 @@ Return strict JSON in this format:
   "questions": [
     {
       "id": "q1",
-      "term": "<Rundown the text one by one and list ALL terms, acronyms, names, organizations, locations, events, dates, software/tools, laws, documents, notable works, concepts, frameworks, theories, formulas and any discipline-specific items mentioned in the text — include every one.>",
+      "termReal": "<Rundown the text one by one and list ALL terms, acronyms, names, organizations, locations, events, dates, software/tools, laws, documents, notable works, concepts, frameworks, theories, formulas and any discipline-specific items mentioned in the text — include every one.>",
       "definition": "<Provide the exact or MINIMALLY rephrased explanation or description from the text.>"
     }
   ]
@@ -603,7 +603,8 @@ Based on the provided JSON of terms and correct definitions, create multiple-cho
 
 Rules:
 - Keep the correct definition exactly as given.
-- Add 3 wrong options (distractors) that are plausible but incorrect (Just twist some words from the correct definition).
+- Add 3 wrong options (distractors) for TERMS — similar but incorrect terms.
+- Add 3 wrong options (distractors) for DEFINITIONS that plausible but incorrect (Just twist some words from the correct definition).
 - STRICTLY DO NOT OMIT ANY TERMS OR DEFINITIONS FROM THE PROVIDED INPUT.
 - Do not change the "title" field.
 - Return strict JSON in this schema:
@@ -613,7 +614,14 @@ Rules:
   "questions": [
     {
       "id": "q1",
-      "term": "<Term or concept>",
+      "termReal": "<CORRECT TERM OR CONCEPT>",
+      "terms": [
+        { "text": "<CORRECT TERM OR CONCEPT>", "type": "correct" },
+        { "text": "<WRONG OPTION 1>", "type": "wrong" },
+        { "text": "<WRONG OPTION 2>", "type": "wrong" },
+        { "text": "<WRONG OPTION 3>", "type": "wrong" }
+      ],
+      "defReal": "<CORRECT DEFINITION>",
       "definition": [
         { "text": "<CORRECT DEFINITION>", "type": "correct" },
         { "text": "<WRONG OPTION 1>", "type": "wrong" },
@@ -693,24 +701,48 @@ Rules:
       }
 
       case 'terms': {
-        await reviewerRef.set({ id: reviewerId, title: parsed.title || 'Untitled', createdAt: new Date(), startDate: new Date() });
+  await reviewerRef.set({ id: reviewerId, title: parsed.title || 'Untitled', createdAt: new Date(), startDate: new Date() });
 
-        const saveBatch = db.batch();
-        for (const q of parsed.questions || []) {
-          if (!q?.term || !Array.isArray(q.definition)) continue;
+  const saveBatch = db.batch();
+  for (const q of parsed.questions || []) {
+ 
+    if (!q?.termReal || !Array.isArray(q.definition)) continue;
 
-          const definitions = q.definition
-            .filter(d => d?.text && d?.type)
-            .map(d => ({ text: d.text.trim(), type: d.type }));
 
-          if (definitions.length === 0) continue;
 
-          const qRef = reviewerRef.collection('questions').doc(q.id || undefined);
-          saveBatch.set(qRef, { term: q.term.trim(), definition: definitions });
-        }
-        await saveBatch.commit();
-        break;
-      }
+    const definitions = q.definition
+      .filter(d => d?.text && d?.type)
+      .map(d => ({ text: d.text.trim(), type: d.type }));
+
+    if (definitions.length === 0) continue;
+
+   const termsArr = (q.terms || [])
+  .filter(t => t?.text && t?.type)
+  .map(t => ({ text: t.text.trim(), type: t.type }));
+
+
+
+
+    let defReal = (typeof q.defReal === 'string' && q.defReal.trim()) ? q.defReal.trim() : null;
+    if (!defReal) {
+      const firstCorrect = definitions.find(d => d.type === 'correct' && d.text);
+      defReal = firstCorrect ? firstCorrect.text.trim() : (definitions[0] ? definitions[0].text : null);
+    }
+
+    const qRef = reviewerRef.collection('questions').doc(q.id || undefined);
+
+
+    saveBatch.set(qRef, { 
+      term: q.termReal.trim(),
+      terms: termsArr,
+      defReal,
+      definition: definitions 
+    });
+  }
+  await saveBatch.commit();
+  break;
+}
+
 
       case 'summarize':
       case 'explain': {
