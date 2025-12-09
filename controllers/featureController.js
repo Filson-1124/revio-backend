@@ -604,7 +604,7 @@ Based on the provided JSON of terms and correct definitions, create multiple-cho
 Rules:
 - Keep the correct definition exactly as given.
 - Add 3 wrong options (distractors) for TERMS — similar but incorrect terms.
-- Add 3 wrong options (distractors) for DEFINITIONS that plausible but incorrect (Just twist some words from the correct definition).
+- Add 3 wrong options (distractors) for DEFINITIONS that are plausible but incorrect (stricly just twist some words from the correct definition to match its length).
 - STRICTLY DO NOT OMIT ANY TERMS OR DEFINITIONS FROM THE PROVIDED INPUT.
 - Do not change the "title" field.
 - Return strict JSON in this schema:

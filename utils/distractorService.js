@@ -116,58 +116,6 @@ Correct definition: ${correctDefinition}
   return Array(count).fill("");
 }
 
-
-async function generateTermDistractors(term, correctDefinition, count = 3) {
-  if (!term || !correctDefinition) return [];
-
-  const key = `term-distr:${Buffer.from(`${term}||${correctDefinition}`).toString("base64")}:${count}`;
-  const cached = await cache.get(key);
-  if (cached) return cached;
-
-  const prompt = `
-You are an assistant that creates wrong but plausible TERM OPTIONS.
-
-Generate exactly ${count} incorrect terms for the given concept.
-
-Rules:
-- MUST NOT be synonyms or near-synonyms of the correct term.
-- MUST look like believable distractors in a multiple-choice exam.
-- JSON array ONLY.
-
-Correct term: ${term}
-Correct definition: ${correctDefinition}
-`;
-
-  try {
-    const response = await openai.chat.completions.create({
-      model: MODEL,
-      messages: [
-        { role: "system", content: "Generate wrong term options only." },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.7,
-      max_tokens: 300,
-    });
-
-    const text = response.choices?.[0]?.message?.content?.trim() || "";
-    let parsed = safeParseJSONMaybeArray(text)
-      .map((v) => String(v).trim())
-      .slice(0, count);
-
-    while (parsed.length < count) parsed.push("");
-
-    await cache.set(key, parsed, CACHE_TTL);
-    return parsed;
-  } catch {
-    return Array(count).fill("");
-  }
-}
-
-
-
-
-
-
 async function generateDistractorsForItems(items = [], count = 3) {
   if (!Array.isArray(items) || items.length === 0) return {};
 
@@ -287,28 +235,10 @@ ${batchPromptParts}
     }
   }
 
-for (const it of items) {
-  const definitionDistractors = results[it.id] || Array(count).fill("");
-
-
-  const termDistractors = await generateTermDistractors(
-    it.term,
-    it.correctDefinition,
-    count
-  );
-
-  results[it.id] = {
-    terms: [
-      { text: it.term, type: "correct" },
-      ...termDistractors.map((t) => ({ text: t, type: "wrong" })),
-    ],
-    definition: [
-      { text: it.correctDefinition, type: "correct" },
-      ...definitionDistractors.map((d) => ({ text: d, type: "wrong" })),
-    ],
-  };
-}
-return results;
+  for (const it of items) {
+    if (!results[it.id]) results[it.id] = Array(count).fill("");
+  }
+  return results;
 }
 
-export { generateDistractorsForItems, generateForSingle, generateTermDistractors };
+export { generateDistractorsForItems, generateForSingle };
