@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   process.env.VITE_API_URL, 'https://revio-web-ebon.vercel.app',  
   'http://localhost:5173', 'http://192.168.254.110:5173', 'capacitor://localhost', 
-  'http://localhost'
+  'http://localhost', 'https://localhost'
 ];
 
 // Middleware
